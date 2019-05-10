@@ -1,0 +1,37 @@
+{-# STDLIB_VERSION 3 #-}
+{-# CONTENT_TYPE DAPP #-}
+{-# SCRIPT_TYPE ACCOUNT #-}
+
+@Callable(i)
+func deposit() = {
+    let pmt = i.payment.value()
+    let amt = if (isDefined(pmt.assetId))
+        then throw("no custom tokens for this demo")
+        else pmt.amount
+    let key = i.caller.bytes.toBase58String()
+    let currentAmount = match getInteger(this, key) {
+        case x:Int => x
+        case _ => 0
+    }
+    let newAmount = currentAmount + amt
+    WriteSet([DataEntry(key, newAmount)])
+}
+
+@Callable(i)
+func withdraw(amt: Int) = {
+    let key = i.caller.bytes.toBase58String()
+    let currentAmount = match getInteger(this, key) {
+        case x:Int => x
+        case _ => 0
+    }
+    if (amt <= 0)
+        then throw("can't withdraw negative")
+        else if(amt > currentAmount)
+            then throw("can't withdraw more than own")
+            else {
+                ScriptResult(
+                    WriteSet([DataEntry(key, currentAmount - amt)]),
+                    TransferSet([ScriptTransfer(i.caller, amt, unit)])
+                    )
+            }    
+}

@@ -15,6 +15,7 @@ https://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglm
 
 https://chrome-ext.wvservices.com/dapp-wallet.html
 
+# Resources
 
 https://forum.wavesplatform.com/
 
